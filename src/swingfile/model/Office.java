@@ -13,24 +13,24 @@ import swingfile.controller.Manager;
  * @author Hoang
  */
 public class Office implements Serializable,Manager{
-    private String id;
+    private int id;
     private String name;
     private String code;
     public Office(){
         
     }
     
-    public Office(String id,String code,String name){
+    public Office(int id,String code,String name){
         this.id = id;
         this.code = code;
         this.name = name;
     }
     
-    public String getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(int id) {
         this.id = id;
     }
 

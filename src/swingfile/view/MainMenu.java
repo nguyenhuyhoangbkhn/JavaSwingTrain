@@ -7,7 +7,9 @@ package swingfile.view;
 
 import java.util.ArrayList;
 import javax.swing.JOptionPane;
+import javax.swing.SpringLayout;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
 import swingfile.controller.IOFile;
 import swingfile.controller.Manager;
 import swingfile.model.Device;
@@ -19,36 +21,38 @@ import swingfile.validate.Validate;
  * @author Hoang
  */
 public class MainMenu extends javax.swing.JFrame {
-    private ArrayList<Manager> listDevice;
-    private ArrayList<Manager> listOffice;
+    private ArrayList<Device> listDevice = new ArrayList<>();
+    private ArrayList<Office> listOffice = new ArrayList<Office>();
     IOFile iof;
-    DefaultTableModel model;
-    DefaultTableModel modelOffice;
+    
+    DefaultTableModel model,modelOffice;
+//    DefaultTableModel ;
     private int idFlag = 0;
-    private String idFlagOffice = "0";
+    private int idFlagOffice = 0;
     /**
      * Creates new form MainMenu
      */
     public MainMenu() {
         iof = new IOFile();
-        listDevice = new ArrayList<>();
+//        listDevice = new ArrayList<>();
         listDevice = iof.readFile("TB.DAT");
         
-        listOffice = new ArrayList<>();
-        listOffice = iof.readFile("BP.DAT");
+        IOFile iof1 = new IOFile();
+//        listOffice = new ArrayList<>();
+        listOffice = iof1.readFile("BP.DAT");
         
         initComponents();
+        //display device
         model = (DefaultTableModel) jTable1.getModel(); 
-        displayDevice();
+        displayDevice(listDevice);
         
-        //display office
         modelOffice = (DefaultTableModel) jTable2.getModel();
-//        displayOffice();
+        displayOffice();
     }
     
-    private void displayDevice(){
-        for (Manager manager: listDevice){
-            Device device = (Device)manager;
+    private void displayDevice(ArrayList<Device> listDevice){
+        for (Device device: listDevice){
+//            Device device = (Device)manager;
             model.addRow(new Object[]{
                 device.getId(),
                 device.getName(),
@@ -59,17 +63,11 @@ public class MainMenu extends javax.swing.JFrame {
         }
     }
     
-//    private void displayOffice(){
-//        for (Manager manager: listOffice){
-//            Office office = (Office)manager;
-//            modelOffice.addRow(new Object[]{
-//                office.getId(),
-//                office.getCode(),
-//                office.getName()
-//            });
-//            idFlagOffice = office.getId();
-//        }
-//    }
+    private void displayOffice(){
+        for (Office office:listOffice){
+            System.out.println(office.getId());
+        }
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -103,7 +101,7 @@ public class MainMenu extends javax.swing.JFrame {
         jLabel5 = new javax.swing.JLabel();
         codeOffice = new javax.swing.JTextField();
         nameOffice = new javax.swing.JTextField();
-        jButton6 = new javax.swing.JButton();
+        addOffice = new javax.swing.JButton();
         jButton7 = new javax.swing.JButton();
         jButton8 = new javax.swing.JButton();
         jButton9 = new javax.swing.JButton();
@@ -112,6 +110,12 @@ public class MainMenu extends javax.swing.JFrame {
         noticaionOffice = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+
+        jTabbedPane1.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                jTabbedPane1FocusGained(evt);
+            }
+        });
 
         jPanel1.setBackground(new java.awt.Color(204, 255, 255));
 
@@ -294,9 +298,16 @@ public class MainMenu extends javax.swing.JFrame {
                 "ID", "CODE", "Tên BP"
             }
         ) {
+            Class[] types = new Class [] {
+                java.lang.String.class, java.lang.String.class, java.lang.String.class
+            };
             boolean[] canEdit = new boolean [] {
                 false, false, false
             };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
                 return canEdit [columnIndex];
@@ -314,10 +325,10 @@ public class MainMenu extends javax.swing.JFrame {
             }
         });
 
-        jButton6.setText("Thêm");
-        jButton6.addActionListener(new java.awt.event.ActionListener() {
+        addOffice.setText("Thêm");
+        addOffice.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton6ActionPerformed(evt);
+                addOfficeActionPerformed(evt);
             }
         });
 
@@ -364,7 +375,7 @@ public class MainMenu extends javax.swing.JFrame {
                         .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
                             .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                                 .addComponent(jButton7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jButton6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addComponent(addOffice, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                             .addGap(86, 86, 86)))))
         );
         jPanel2Layout.setVerticalGroup(
@@ -377,7 +388,7 @@ public class MainMenu extends javax.swing.JFrame {
                         .addComponent(jLabel4))
                     .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(codeOffice, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jButton6)
+                        .addComponent(addOffice)
                         .addComponent(jLabel6)
                         .addComponent(noticaionOffice, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -509,17 +520,40 @@ public class MainMenu extends javax.swing.JFrame {
         resetData();
     }//GEN-LAST:event_jButton4ActionPerformed
 
-    private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton6ActionPerformed
+    private void addOfficeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addOfficeActionPerformed
+        if (Validate.checkName(codeOffice.getText()) == true && 
+                Validate.checkName(nameOffice.getText()) == true){
+            Office office = new Office(++idFlagOffice,codeOffice.getText(),
+                                        nameOffice.getText());
 
+            // write data
+            listOffice.add(office);
+            iof.writeFile(listDevice, "BP.DAT");
+            //reset data
+            resetDataOffice();
+            
+            //view
+            modelOffice.addRow(new Object[]{
+                office.getId(),
+                office.getCode(),
+                office.getName()
+            });
+        }
+    }//GEN-LAST:event_addOfficeActionPerformed
+    private void resetDataOffice(){
+        codeOffice.setText("");
+        nameOffice.setText("");
+    }
     private void codeOfficeFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_codeOfficeFocusLost
-        // TODO add your handling code here:
-        if (codeOffice.getText().length() == 0)
-        noticaionOffice.setText("khong duoc de trong");
+        if(codeOffice.getText().length() == 0)
+            noticaionOffice.setText("Không được để trống");
         else noticaionOffice.setText("");
 
     }//GEN-LAST:event_codeOfficeFocusLost
+
+    private void jTabbedPane1FocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTabbedPane1FocusGained
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jTabbedPane1FocusGained
     //return index with device id = idssss
     public int findObj(int id){
         int a = -1;
@@ -568,6 +602,7 @@ public class MainMenu extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton addOffice;
     private javax.swing.JTextField codeOffice;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton10;
@@ -575,7 +610,6 @@ public class MainMenu extends javax.swing.JFrame {
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
     private javax.swing.JButton jButton5;
-    private javax.swing.JButton jButton6;
     private javax.swing.JButton jButton7;
     private javax.swing.JButton jButton8;
     private javax.swing.JButton jButton9;

@@ -87,4 +87,10 @@ public class Device implements Serializable,Manager{
         };
     }
     
+    @Override
+	public String toString() {
+            return this.getId() + "\t" + this.getName() + "\t" + this.getOrigin()
+                       + "\t" + this.getYearProduct();
+        }
+    
 }
